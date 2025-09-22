@@ -13,7 +13,7 @@ import traceback
 # Vercel akan secara otomatis menemukan variabel 'app' ini.
 app = Flask(__name__)
 
-@app.route('/textract-signature', methods=['POST'])
+@app.route('/api/textract-signature', methods=['POST'])
 def generate_textract_signature():
     try:
         data = request.get_json()
@@ -90,12 +90,12 @@ def generate_textract_signature():
             'type': 'signature_generation_error'
         }), 500
 
-@app.route('/health', methods=['GET'])
+@app.route('/api/health', methods=['GET'])
 def health():
     return jsonify({
         'status': 'healthy',
         'service': 'AWS Signature Generator',
-        'version': '1.0.1', # Versi diperbarui
+        'version': '1.0.1',  # Versi diperbarui
         'timestamp': datetime.utcnow().isoformat() + 'Z'
     })
 
@@ -113,4 +113,3 @@ def root():
 # Vercel tidak akan menjalankan blok ini
 if __name__ == '__main__':
     app.run(debug=True)
-
