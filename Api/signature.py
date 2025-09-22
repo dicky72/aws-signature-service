@@ -6,8 +6,10 @@ from botocore.credentials import Credentials
 from datetime import datetime
 import json
 
+# Inisialisasi aplikasi Flask
 app = Flask(__name__)
 
+# Endpoint untuk generate signature
 @app.route('/api/textract-signature', methods=['POST'])
 def generate_textract_signature():
     try:
@@ -72,9 +74,12 @@ def generate_textract_signature():
             'error': str(e)
         }), 500
 
+# Endpoint untuk health check
 @app.route('/api/health', methods=['GET'])
 def health():
     return jsonify({'status': 'healthy', 'service': 'AWS Signature Generator'})
 
-# Export for Vercel
-app = app
+# --- PERUBAHAN PENTING UNTUK VERCEL ---
+# Vercel akan mencari variabel bernama 'handler' untuk menjalankan aplikasi Flask Anda.
+# Jangan gunakan app.run() di sini.
+handler = app
