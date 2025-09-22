@@ -1,4 +1,4 @@
-# api/index.py - VERSI BERSIH
+# api/index.py
 
 from flask import Flask, request, jsonify
 import boto3
@@ -9,9 +9,10 @@ from datetime import datetime
 import json
 import traceback
 
+# Inisialisasi aplikasi Flask
+# Vercel akan secara otomatis menemukan variabel 'app' ini.
 app = Flask(__name__)
 
-# Route ini akan diakses melalui /textract-signature
 @app.route('/textract-signature', methods=['POST'])
 def generate_textract_signature():
     try:
@@ -89,28 +90,27 @@ def generate_textract_signature():
             'type': 'signature_generation_error'
         }), 500
 
-# Route ini akan diakses melalui /health
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({
         'status': 'healthy',
         'service': 'AWS Signature Generator',
-        'version': '1.0.0',
+        'version': '1.0.1', # Versi diperbarui
         'timestamp': datetime.utcnow().isoformat() + 'Z'
     })
 
-# Route ini akan diakses melalui /
 @app.route('/', methods=['GET'])
 def root():
     return jsonify({
         'message': 'AWS Signature Service is running!',
-        'note': 'This is the root of the Flask app, accessible via the /api path.',
         'endpoints': {
             'health': '/api/health',
             'textract_signature': '/api/textract-signature'
         }
     })
 
-# Export untuk Vercel
-handler = app
+# Bagian if __name__ == '__main__' hanya untuk testing lokal
+# Vercel tidak akan menjalankan blok ini
+if __name__ == '__main__':
+    app.run(debug=True)
 
