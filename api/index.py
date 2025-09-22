@@ -1,4 +1,4 @@
-# api/index.py - COMPLETE FIXED VERSION
+# api/index.py - VERSI PERBAIKAN
 
 from flask import Flask, request, jsonify
 import boto3
@@ -11,10 +11,10 @@ import traceback
 
 app = Flask(__name__)
 
-@app.route('/api/textract-signature', methods=['POST'])
+# HAPUS /api dari route, karena Vercel sudah menanganinya
+@app.route('/textract-signature', methods=['POST'])
 def generate_textract_signature():
     try:
-        # Get request data
         data = request.get_json()
         
         if not data:
@@ -23,7 +23,6 @@ def generate_textract_signature():
                 'error': 'No JSON data provided'
             }), 400
         
-        # Validate required fields
         required_fields = ['access_key', 'secret_key']
         for field in required_fields:
             if not data.get(field):
@@ -32,23 +31,19 @@ def generate_textract_signature():
                     'error': f'Missing required field: {field}'
                 }), 400
         
-        # AWS credentials
         access_key = data.get('access_key')
         secret_key = data.get('secret_key')
         region = data.get('region', 'us-east-1')
         
-        # Textract setup
         service = 'textract'
         method = 'POST'
         url = f'https://textract.{region}.amazonaws.com/'
         
-        # Headers
         headers = {
             'Content-Type': 'application/x-amz-json-1.1',
             'X-Amz-Target': 'Textract.AnalyzeDocument'
         }
         
-        # Request body
         document_bytes = data.get('document_bytes', '')
         feature_types = data.get('feature_types', ['TABLES', 'FORMS'])
         
@@ -61,7 +56,6 @@ def generate_textract_signature():
         
         body_string = json.dumps(request_body, separators=(',', ':'))
         
-        # Create AWS request
         aws_request = AWSRequest(
             method=method,
             url=url,
@@ -69,16 +63,13 @@ def generate_textract_signature():
             headers=headers
         )
         
-        # Create credentials
         credentials = Credentials(
             access_key=access_key,
             secret_key=secret_key
         )
         
-        # Sign the request
         SigV4Auth(credentials, service, region).add_auth(aws_request)
         
-        # Return signed request data
         return jsonify({
             'success': True,
             'signed_headers': dict(aws_request.headers),
@@ -89,7 +80,6 @@ def generate_textract_signature():
         })
         
     except Exception as e:
-        # Log error for debugging
         error_trace = traceback.format_exc()
         print(f"Error in generate_textract_signature: {error_trace}")
         
@@ -99,7 +89,8 @@ def generate_textract_signature():
             'type': 'signature_generation_error'
         }), 500
 
-@app.route('/api/health', methods=['GET'])
+# HAPUS /api dari route
+@app.route('/health', methods=['GET'])
 def health():
     return jsonify({
         'status': 'healthy',
@@ -108,10 +99,12 @@ def health():
         'timestamp': datetime.utcnow().isoformat() + 'Z'
     })
 
+# Route ini akan diakses melalui /api/ karena nama filenya index.py
 @app.route('/', methods=['GET'])
 def root():
     return jsonify({
-        'message': 'AWS Signature Service',
+        'message': 'AWS Signature Service is running!',
+        'note': 'This is the root of the Flask app, accessible via the /api path.',
         'endpoints': {
             'health': '/api/health',
             'textract_signature': '/api/textract-signature'
@@ -121,5 +114,6 @@ def root():
 # Export for Vercel
 handler = app
 
+# Bagian ini hanya untuk development lokal, tidak akan dijalankan di Vercel
 if __name__ == '__main__':
     app.run(debug=True)
