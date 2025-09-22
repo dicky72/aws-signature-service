@@ -1,13 +1,7 @@
 {
   "functions": {
     "api/signature.py": {
-      "runtime": "@vercel/python"
+      "runtime": "@vercel/python@3.9.16"
     }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/signature.py"
-    }
-  ]
+  }
 }
