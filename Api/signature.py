@@ -76,6 +76,5 @@ def generate_textract_signature():
 def health():
     return jsonify({'status': 'healthy', 'service': 'AWS Signature Generator'})
 
-# Vercel needs this
-def handler(request):
-    return app(request.environ, lambda status, headers: None)
+# Export for Vercel
+app = app
