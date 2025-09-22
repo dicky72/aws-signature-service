@@ -1,4 +1,4 @@
-# api/index.py - VERSI PERBAIKAN
+# api/index.py - VERSI BERSIH
 
 from flask import Flask, request, jsonify
 import boto3
@@ -11,7 +11,7 @@ import traceback
 
 app = Flask(__name__)
 
-# HAPUS /api dari route, karena Vercel sudah menanganinya
+# Route ini akan diakses melalui /textract-signature
 @app.route('/textract-signature', methods=['POST'])
 def generate_textract_signature():
     try:
@@ -89,7 +89,7 @@ def generate_textract_signature():
             'type': 'signature_generation_error'
         }), 500
 
-# HAPUS /api dari route
+# Route ini akan diakses melalui /health
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({
@@ -99,7 +99,7 @@ def health():
         'timestamp': datetime.utcnow().isoformat() + 'Z'
     })
 
-# Route ini akan diakses melalui /api/ karena nama filenya index.py
+# Route ini akan diakses melalui /
 @app.route('/', methods=['GET'])
 def root():
     return jsonify({
@@ -111,9 +111,6 @@ def root():
         }
     })
 
-# Export for Vercel
+# Export untuk Vercel
 handler = app
 
-# Bagian ini hanya untuk development lokal, tidak akan dijalankan di Vercel
-if __name__ == '__main__':
-    app.run(debug=True)
