@@ -1,16 +1,16 @@
 from flask import Flask, request, jsonify
-import boto3
 from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
 from botocore.credentials import Credentials
 from datetime import datetime
 import json
 
-# Inisialisasi aplikasi Flask
 app = Flask(__name__)
 
-# Endpoint untuk generate signature
-@app.route('/api/textract-signature', methods=['POST'])
+# --- PERUBAHAN DI SINI ---
+# Menghapus '/api' dari path rute.
+# Vercel sudah menangani ini secara otomatis karena file berada di folder /api.
+@app.route('/textract-signature', methods=['POST'])
 def generate_textract_signature():
     try:
         data = request.json
@@ -74,12 +74,11 @@ def generate_textract_signature():
             'error': str(e)
         }), 500
 
-# Endpoint untuk health check
-@app.route('/api/health', methods=['GET'])
+# --- DAN PERUBAHAN DI SINI ---
+@app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'healthy', 'service': 'AWS Signature Generator'})
 
-# --- PERUBAHAN PENTING UNTUK VERCEL ---
-# Vercel akan mencari variabel bernama 'handler' untuk menjalankan aplikasi Flask Anda.
-# Jangan gunakan app.run() di sini.
+# Export handler untuk Vercel
 handler = app
+
