@@ -7,10 +7,8 @@ import json
 
 app = Flask(__name__)
 
-# --- PERUBAHAN DI SINI ---
-# Menghapus '/api' dari path rute.
-# Vercel sudah menangani ini secara otomatis karena file berada di folder /api.
-@app.route('/textract-signature', methods=['POST'])
+# Rute harus ditulis lengkap karena Vercel meneruskan path aslinya
+@app.route('/api/textract-signature', methods=['POST'])
 def generate_textract_signature():
     try:
         data = request.json
@@ -74,8 +72,7 @@ def generate_textract_signature():
             'error': str(e)
         }), 500
 
-# --- DAN PERUBAHAN DI SINI ---
-@app.route('/health', methods=['GET'])
+@app.route('/api/health', methods=['GET'])
 def health():
     return jsonify({'status': 'healthy', 'service': 'AWS Signature Generator'})
 
